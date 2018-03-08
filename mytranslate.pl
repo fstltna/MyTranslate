@@ -14,6 +14,7 @@ my $KEYFILE = "/root/.translate_key";
 my $BuildLine = "";
 my $GameId = "";
 my $lang = "";
+my $VERS = "1.0";
 
 if (! -f $KEYFILE)
 {
@@ -25,6 +26,8 @@ my $READKEY = <MYKEYFILE>;
 chop $READKEY;
 close (MYKEYFILE);
 
+print "MyTranslation v$VERS\n";
+print "=========================\n";
 # Get the dbadmin's password
 print "Enter the SQL users password: ";
 my $DBPASSWD = <STDIN>;

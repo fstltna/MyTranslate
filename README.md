@@ -2,6 +2,8 @@
 
 Translate phpBB3 Arcade games listings to english from Hungarian. Uses the Google translate API to do the translation.
 
+Official Github repo: [Get it here](https://github.com/fstltna/MyTranslate) 
+
 ---
 
 On Ubuntu Install this module:
@@ -34,7 +36,8 @@ It will display easch listing from your database and give you a choice to act on
         q - quit processing and return to command prompt
         a - accept this entry and all further entries
         y - accept this entry but keep asking for  later records
+        e - accept this entry and any other entries not detected as english
         n - (or just enter) - skip this entry, do not translate it
 
 
-**Note:** Do not run this twice on the same entry, that is do not accept it twice or use the "all" option or you will seem some extra garbage at the start of the translation if it is not in Hungarian format. Press enter or "n" to skip that line and go to the next entry.
+**Note:** Do not run this twice on the same entry, that is do not accept it twice or use the "all" option or you will seem some extra garbage at the start of the translation if it is not in Hungarian format. Press enter or "n" to skip that line and go to the next entry. If you trust the detection you can enter "e" and it will autoaccept entries it thinks are not english.
