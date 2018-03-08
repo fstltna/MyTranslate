@@ -13,6 +13,7 @@ my $KEYFILE = "/root/.translate_key";
 # Run code below here
 my $BuildLine = "";
 my $GameId = "";
+my $lang = "";
 
 if (! -f $KEYFILE)
 {
@@ -45,6 +46,8 @@ my $wgt = WWW::Google::Translate->new(
 # Start looping for records in the table
 my $KeepWorking=-1;
 my $AcceptAll=0;
+my $AcceptEng=0;
+
 while ($KeepWorking && (@row = $sth->fetchrow_array))
 {
 	$GameId = $row[0];
@@ -55,6 +58,9 @@ while ($KeepWorking && (@row = $sth->fetchrow_array))
 
 
 	print "vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv\n";
+	my $detectedlang = $wgt->detect( { q => $GameDesc } );
+	$lang = $detectedlang->{data}->{detections}->[0]->[0]->{language};
+	print "Detected language = '$lang'\n";
 	my $r = $wgt->translate( { q => $GameDesc } );
 	$BuildLine = "";
 	for my $trans_rh (@{ $r->{data}->{translations} })
@@ -75,7 +81,7 @@ while ($KeepWorking && (@row = $sth->fetchrow_array))
 	print "| $GameName\n";
 	print "| $GameDesc\n";
 	print "| $BuildLine\n";
-	if ($AcceptAll == 0)
+	if (($AcceptAll == 0) && (($AcceptEng == 0) || (($AcceptEng != 0) && ($lang ne "en"))))
 	{
 		print "Keep this translation? ";
 		$UserChoice = <STDIN>;
@@ -91,6 +97,12 @@ while ($KeepWorking && (@row = $sth->fetchrow_array))
 			$AcceptAll = -1;
 			MarkTranslate();
 		}
+		elsif ($UserChoice eq "e")
+		{
+			print "Accepting All English\n";
+			$AcceptEng = -1;
+			MarkTranslate();
+		}
 		elsif ($UserChoice eq "q")
 		{
 			print "Quiting\n";
@@ -103,7 +115,14 @@ while ($KeepWorking && (@row = $sth->fetchrow_array))
 	}
 	else
 	{
-		print "Auto accepted\n";
+		if ($AcceptAll == 0)
+		{
+			print "Auto Accepting English\n";
+		}
+		else
+		{
+			print "Auto Accepted\n";
+		}
 		MarkTranslate();
 	}
 	print "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n";
