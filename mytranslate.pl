@@ -60,7 +60,7 @@ while ($KeepWorking && (@row = $sth->fetchrow_array))
 	for my $trans_rh (@{ $r->{data}->{translations} })
 	{
 		$NewText = $trans_rh->{translatedText};
-		chop ($NewText);
+		chomp ($NewText);
 		if ($BuildLine eq "")
 		{
 			$BuildLine = $NewText;
