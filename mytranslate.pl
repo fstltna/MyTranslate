@@ -1,0 +1,103 @@
+#!/usr/bin/perl
+use DBI;
+use WWW::Google::Translate;
+
+# Settings
+my $DATABASE="phpbb3";
+my $DBTABLE="phpbb_arcade_games";
+my $DBUSER="root";
+my $SOURCE_LANG="hu";
+my $DEST_LANG="en";
+my $KEYFILE = "/root/.translate_key";
+
+# Run code below here
+
+if (! -f $KEYFILE)
+{
+	print "Unable to open key file - paste your google key into $KEYFILE\n";
+	exit 1;
+}
+open MYKEYFILE, "<$KEYFILE" or die "Couldn't open file $! for reading";
+my $READKEY = <MYKEYFILE>;
+chop $READKEY;
+close (MYKEYFILE);
+
+# Get the dbadmin's password
+print "Enter the SQL users password: ";
+my $DBPASSWD = <STDIN>;
+chomp $DBPASSWD;
+
+# Create DB objects
+my $dbh = DBI->connect("DBI:mysql:$DATABASE", $DBUSER, $DBPASSWD) || die "ERROR: $DBI::errstr";
+my $query = "select * from $DBTABLE";
+my $sth = $dbh->prepare($query);
+$sth->execute();
+
+my $wgt = WWW::Google::Translate->new(
+      {   key            => $READKEY,
+          default_source => $SOURCE_LANG,
+          default_target => $DEST_LANG,
+      }
+);
+
+# Start looping for records in the table
+my $KeepWorking=-1;
+my $AcceptAll=0;
+while ($KeepWorking && (@row = $sth->fetchrow_array))
+{
+	$GameId = $row[0];
+	$GameDesc = $row[3];
+	$GameName = $row[9];
+	my $NewText="";
+	my $UserChoice="";
+
+
+	print "vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv\n";
+	my $r = $wgt->translate( { q => $GameDesc } );
+	my $BuildLine = "";
+	for my $trans_rh (@{ $r->{data}->{translations} })
+	{
+		$NewText = $trans_rh->{translatedText};
+		chop ($NewText);
+		$BuildLine = "$BuildLine $NewText";
+	}
+	# Convert EOL to spaces
+$BuildLine =~ tr{\n}{ };
+	print "| $GameName\n";
+	print "| $GameDesc\n";
+	print "| $BuildLine\n";
+	if ($AcceptAll == 0)
+	{
+		print "Keep this translation? ";
+		$UserChoice = <STDIN>;
+		chop($UserChoice);
+		if ($UserChoice eq "y")
+		{
+			print "Keeping translation\n";
+		}
+		elsif ($UserChoice eq "a")
+		{
+			print "Accepting All\n";
+			$AcceptAll = -1;
+		}
+		elsif ($UserChoice eq "q")
+		{
+			print "Quiting\n";
+			$KeepWorking = 0;
+		}
+		else
+		{
+			print "Discarding translation\n";
+		}
+	}
+	else
+	{
+		print "Auto accepted\n";
+	}
+	print "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n";
+}
+$sth->finish();
+$dbh->disconnect();
+
+exit 0;
+

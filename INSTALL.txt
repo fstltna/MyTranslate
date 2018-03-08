@@ -1,0 +1,2 @@
+Install this module: libssl-dev
+Run cpan and install WWW::Google::Translate and DBI
