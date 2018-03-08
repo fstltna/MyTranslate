@@ -11,6 +11,8 @@ my $DEST_LANG="en";
 my $KEYFILE = "/root/.translate_key";
 
 # Run code below here
+my $BuildLine = "";
+my $GameId = "";
 
 if (! -f $KEYFILE)
 {
@@ -54,7 +56,7 @@ while ($KeepWorking && (@row = $sth->fetchrow_array))
 
 	print "vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv\n";
 	my $r = $wgt->translate( { q => $GameDesc } );
-	my $BuildLine = "";
+	$BuildLine = "";
 	for my $trans_rh (@{ $r->{data}->{translations} })
 	{
 		$NewText = $trans_rh->{translatedText};
@@ -62,7 +64,7 @@ while ($KeepWorking && (@row = $sth->fetchrow_array))
 		$BuildLine = "$BuildLine $NewText";
 	}
 	# Convert EOL to spaces
-$BuildLine =~ tr{\n}{ };
+	$BuildLine =~ tr{\n}{ };
 	print "| $GameName\n";
 	print "| $GameDesc\n";
 	print "| $BuildLine\n";
@@ -74,11 +76,13 @@ $BuildLine =~ tr{\n}{ };
 		if ($UserChoice eq "y")
 		{
 			print "Keeping translation\n";
+			MarkTranslate();
 		}
 		elsif ($UserChoice eq "a")
 		{
 			print "Accepting All\n";
 			$AcceptAll = -1;
+			MarkTranslate();
 		}
 		elsif ($UserChoice eq "q")
 		{
@@ -93,9 +97,19 @@ $BuildLine =~ tr{\n}{ };
 	else
 	{
 		print "Auto accepted\n";
+		MarkTranslate();
 	}
 	print "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n";
 }
+
+sub MarkTranslate
+{
+	$dbh->do("UPDATE $DBTABLE SET game_desc = ? WHERE game_id = ?",
+		undef,
+		$BuildLine,
+		$GameId);
+}
+
 $sth->finish();
 $dbh->disconnect();
 
