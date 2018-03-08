@@ -61,7 +61,14 @@ while ($KeepWorking && (@row = $sth->fetchrow_array))
 	{
 		$NewText = $trans_rh->{translatedText};
 		chop ($NewText);
-		$BuildLine = "$BuildLine $NewText";
+		if ($BuildLine eq "")
+		{
+			$BuildLine = $NewText;
+		}
+		else
+		{
+			$BuildLine = "$BuildLine $NewText";
+		}
 	}
 	# Convert EOL to spaces
 	$BuildLine =~ tr{\n}{ };
