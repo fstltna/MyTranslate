@@ -2,7 +2,7 @@
 
 Translate phpBB3 Arcade games listings to english from Hungarian. Uses the Google translate API to do the translation.
 
-Official Github repo: [Get it here](https://github.com/fstltna/MyTranslate) 
+Official Github repo: [Get it here](https://github.com/fstltna/MyTranslate) | Official Download Site: [Download Site](https://gameplayer.club/index.php/game-downloads/category/9-phpbb3-arcade) | Official Support Forum [Is Here](http://gameplayer.club/phpBB3/viewforum.php?f=8) 
 
 ---
 
