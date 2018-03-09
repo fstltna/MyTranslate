@@ -118,15 +118,15 @@ while ($KeepWorking && (@row = $sth->fetchrow_array))
 	}
 	else
 	{
-		if ($AcceptAll == 0)
+		if (($AcceptAll == 0) && ($AcceptEng))
 		{
-			print "Auto Accepting English\n";
+			print "Skipping - English Description\n";
 		}
 		else
 		{
 			print "Auto Accepted\n";
+			MarkTranslate();
 		}
-		MarkTranslate();
 	}
 	print "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n";
 }
